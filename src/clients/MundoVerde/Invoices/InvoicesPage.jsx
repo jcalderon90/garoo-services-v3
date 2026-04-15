@@ -30,6 +30,10 @@ const MundoVerdeInvoices = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
+    // Portal History States (Logging usage)
+    const [portalHistory, setPortalHistory] = useState([]);
+    const [isFetchingPortalHistory, setIsFetchingPortalHistory] = useState(false);
+
     const [showToast, setShowToast] = useState(false);
     const [toastTitle, setToastTitle] = useState("");
     const [toastMessage, setToastMessage] = useState("");
@@ -40,32 +44,25 @@ const MundoVerdeInvoices = () => {
     const [showPdfPreview, setShowPdfPreview] = useState(true);
     const [showXmlPreview, setShowXmlPreview] = useState(false);
 
-    const fetchInvoices = async (page = 1) => {
-        setIsFetchingInvoices(true);
+    const fetchPortalHistory = async () => {
+        setIsFetchingPortalHistory(true);
         try {
-            const params = {
-                page: page,
-                pageSize: 10,
-                ...filters,
-            };
-            const response = await garooInstance.get(`/services/execute/facturas-sat`, { params });
-            const result = response.data;
-            setInvoices(result.data || []);
-            setTotalPages(result.meta?.totalPages || 1);
-            setCurrentPage(result.meta?.page || page);
+            const response = await garooInstance.get(`/services/history/facturas`);
+            setPortalHistory(response.data || []);
         } catch (error) {
             void error;
-            setToastTitle("Error Historial");
-            setToastMessage("No se pudieron cargar las facturas de SAT.");
+            setToastTitle("Error Portal");
+            setToastMessage("No se pudo cargar el historial del portal.");
             setToastVariant("danger");
             setShowToast(true);
         } finally {
-            setIsFetchingInvoices(false);
+            setIsFetchingPortalHistory(false);
         }
     };
 
     useEffect(() => {
         if (activeTab === "dashboard") fetchInvoices(1);
+        if (activeTab === "portal_history") fetchPortalHistory();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
@@ -627,9 +624,7 @@ const MundoVerdeInvoices = () => {
                 <p className="opacity-75">
                     Gira tu dispositivo para acceder al portal de facturación.
                 </p>
-            </div>
-
-            <div className="main-content-layout p-2">
+                <div className="main-content-layout p-2">
                 <div className="header-wrapper-v3">
                     <div className="d-flex align-items-center gap-3">
                         <h1
@@ -670,91 +665,54 @@ const MundoVerdeInvoices = () => {
                     </div>
                     <div className="tabs-container-v3">
                         <button
-                            className={
-                                activeTab === "form"
-                                    ? "active-tab px-3"
-                                    : "px-3"
-                            }
+                            className={activeTab === "form" ? "active-tab px-3" : "px-3"}
                             onClick={() => setActiveTab("form")}
                         >
                             <i className="bi bi-plus-lg"></i> Nueva Factura
                         </button>
                         <button
-                            className={
-                                activeTab === "proveedor"
-                                    ? "active-tab px-3"
-                                    : "px-3"
-                            }
+                            className={activeTab === "proveedor" ? "active-tab px-3" : "px-3"}
                             onClick={() => setActiveTab("proveedor")}
                         >
                             Reg. Proveedor
                         </button>
                         <button
-                            className={
-                                activeTab === "dashboard"
-                                    ? "active-tab px-3"
-                                    : "px-3"
-                            }
+                            className={activeTab === "dashboard" ? "active-tab px-3" : "px-3"}
                             onClick={() => setActiveTab("dashboard")}
                         >
                             <i className="bi bi-history"></i> Historial SAT
+                        </button>
+                        <button
+                            className={activeTab === "portal_history" ? "active-tab px-3" : "px-3"}
+                            onClick={() => setActiveTab("portal_history")}
+                        >
+                            <i className="bi bi-person-badge"></i> Mis Envíos
                         </button>
                     </div>
                 </div>
 
                 {activeTab === "proveedor" ? (
-                    <div
-                        style={{
-                            maxWidth: 1200,
-                            width: "100%",
-                            margin: "0 auto",
-                        }}
-                    >
+                    <div style={{ maxWidth: 1200, width: "100%", margin: "0 auto" }}>
                         <RegistroProveedor embedded />
                     </div>
                 ) : activeTab === "form" ? (
                     <div className="layout-grid-v4">
                         <div className="preview-stack-v3">
                             {showPdfPreview && (
-                                <div
-                                    className={`pane-v3 ${!showXmlPreview ? "h-100" : ""}`}
-                                    style={{
-                                        flex: showXmlPreview ? "1" : "none",
-                                    }}
-                                >
+                                <div className={`pane-v3 ${!showXmlPreview ? "h-100" : ""}`} style={{ flex: showXmlPreview ? "1" : "none" }}>
                                     <div className="pane-header-v3">
                                         <div className="d-flex align-items-center gap-2">
                                             <i className="bi bi-file-earmark-pdf-fill text-danger"></i>
                                             <span>Visor de Documento</span>
                                         </div>
                                     </div>
-                                    <div
-                                        className="flex-grow-1"
-                                        style={{
-                                            background: "#f1f5f9",
-                                            minHeight: "400px",
-                                        }}
-                                    >
+                                    <div className="flex-grow-1" style={{ background: "#f1f5f9", minHeight: "400px" }}>
                                         {pdfUrl ? (
-                                            <iframe
-                                                src={pdfUrl}
-                                                width="100%"
-                                                height="100%"
-                                                title="PDF"
-                                                style={{
-                                                    border: "none",
-                                                    display: "block",
-                                                }}
-                                            />
+                                            <iframe src={pdfUrl} width="100%" height="100%" title="PDF" style={{ border: "none", display: "block" }} />
                                         ) : (
                                             <div className="d-flex flex-column align-items-center justify-content-center h-100 opacity-20">
-                                                <i
-                                                    className="bi bi-file-earmark-pdf"
-                                                    style={{ fontSize: "3rem" }}
-                                                ></i>
-                                                <span className="fw-950 x-small mt-3">
-                                                    VISTA PREVIA PDF
-                                                </span>
+                                                <i className="bi bi-file-earmark-pdf" style={{ fontSize: "3rem" }}></i>
+                                                <span className="fw-950 x-small mt-3">VISTA PREVIA PDF</span>
                                             </div>
                                         )}
                                     </div>
@@ -762,30 +720,15 @@ const MundoVerdeInvoices = () => {
                             )}
 
                             {showXmlPreview && (
-                                <div
-                                    className="pane-v3 animate-in"
-                                    style={{
-                                        height: "220px",
-                                        marginTop: showPdfPreview
-                                            ? "1rem"
-                                            : "0",
-                                    }}
-                                >
+                                <div className="pane-v3 animate-in" style={{ height: "220px", marginTop: showPdfPreview ? "1rem" : "0" }}>
                                     <div className="pane-header-v3">
-                                        <span>
-                                            <i className="bi bi-code-square text-primary me-2"></i>{" "}
-                                            Estructura de Datos (XML)
-                                        </span>
+                                        <span><i className="bi bi-code-square text-primary me-2"></i> Estructura de Datos (XML)</span>
                                     </div>
                                     <div className="xml-shell-v3">
                                         {xmlContent ? (
-                                            <pre className="m-0">
-                                                {xmlContent}
-                                            </pre>
+                                            <pre className="m-0">{xmlContent}</pre>
                                         ) : (
-                                            <div className="d-flex align-items-center justify-content-center h-100 opacity-20 fw-950 x-small">
-                                                ESTRUCTURA SIN CARGAR
-                                            </div>
+                                            <div className="d-flex align-items-center justify-content-center h-100 opacity-20 fw-950 x-small">ESTRUCTURA SIN CARGAR</div>
                                         )}
                                     </div>
                                 </div>
@@ -793,419 +736,228 @@ const MundoVerdeInvoices = () => {
 
                             {!showPdfPreview && !showXmlPreview && (
                                 <div className="pane-v3 h-100 d-flex flex-column align-items-center justify-content-center opacity-20">
-                                    <i
-                                        className="bi bi-eye-slash"
-                                        style={{ fontSize: "3.5rem" }}
-                                    ></i>
-                                    <span className="fw-950 x-small mt-3">
-                                        VISTAS PREVIAS DESACTIVADAS
-                                    </span>
+                                    <i className="bi bi-eye-slash" style={{ fontSize: "3.5rem" }}></i>
+                                    <span className="fw-950 x-small mt-3">VISTAS PREVIAS DESACTIVADAS</span>
                                 </div>
                             )}
                         </div>
 
                         <div className="preview-stack-v3">
-                            <form
-                                className="pane-v3"
-                                style={{ background: "white" }}
-                                onSubmit={handleSubmit(onSubmit)}
-                            >
+                            <form className="pane-v3" style={{ background: "white" }} onSubmit={handleSubmit(onSubmit)}>
                                 <div className="pane-header-v3">
-                                    <span>
-                                        <i className="bi bi-send-fill text-primary me-2"></i>{" "}
-                                        Datos de Envío
-                                    </span>
+                                    <span><i className="bi bi-send-fill text-primary me-2"></i> Datos de Envío</span>
                                 </div>
                                 <div className="form-shell-v4">
                                     <div className="field-item-v3">
                                         <label>NIT del Emisor</label>
-                                        <input
-                                            {...register("nit", {
-                                                required: true,
-                                            })}
-                                            placeholder="1234567-k"
-                                        />
+                                        <input {...register("nit", { required: true })} placeholder="1234567-k" />
                                     </div>
                                     <div className="field-item-v3">
                                         <label>Serie / Correlativo</label>
-                                        <input
-                                            {...register("serie", {
-                                                required: true,
-                                            })}
-                                            placeholder="A-9988"
-                                        />
+                                        <input {...register("serie", { required: true })} placeholder="A-9988" />
                                     </div>
-
                                     <div className="full-width-v4 mt-3">
-                                        <p
-                                            className="fw-950 text-muted mb-3"
-                                            style={{
-                                                fontSize: "0.65rem",
-                                                letterSpacing: "1px",
-                                                textTransform: "uppercase",
-                                            }}
-                                        >
-                                            Documentos de Soporte
-                                        </p>
-                                        <div
-                                            className="d-grid"
-                                            style={{
-                                                gridTemplateColumns: "1fr 1fr",
-                                                gap: "1rem",
-                                            }}
-                                        >
+                                        <p className="fw-950 text-muted mb-3" style={{ fontSize: "0.65rem", letterSpacing: "1px", textTransform: "uppercase" }}>Documentos de Soporte</p>
+                                        <div className="d-grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                                             <div className="d-flex flex-column gap-2">
                                                 <div className="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
-                                                    <input
-                                                        className="form-check-input m-0 cursor-pointer"
-                                                        type="checkbox"
-                                                        id="pdfToggle"
-                                                        checked={showPdfPreview}
-                                                        onChange={() =>
-                                                            setShowPdfPreview(
-                                                                !showPdfPreview,
-                                                            )
-                                                        }
-                                                    />
-                                                    <label
-                                                        className="switch-label-v4 cursor-pointer m-0"
-                                                        htmlFor="pdfToggle"
-                                                    >
-                                                        Vista PDF
-                                                    </label>
+                                                    <input className="form-check-input m-0 cursor-pointer" type="checkbox" id="pdfToggle" checked={showPdfPreview} onChange={() => setShowPdfPreview(!showPdfPreview)} />
+                                                    <label className="switch-label-v4 cursor-pointer m-0" htmlFor="pdfToggle">Vista PDF</label>
                                                 </div>
-                                                <label
-                                                    className={`file-zone-v4 ${selectedPdf ? "is-ready" : ""}`}
-                                                >
-                                                    <input
-                                                        type="file"
-                                                        accept=".pdf"
-                                                        hidden
-                                                        {...register("pdf", {
-                                                            required: true,
-                                                            onChange:
-                                                                handlePdfChange,
-                                                        })}
-                                                    />
-                                                    <i
-                                                        className={`bi ${selectedPdf ? "bi-file-earmark-check-fill" : "bi-file-earmark-pdf"}`}
-                                                    ></i>
-                                                    <p>
-                                                        {selectedPdf
-                                                            ? "PDF Listo"
-                                                            : "PDF"}
-                                                    </p>
+                                                <label className={`file-zone-v4 ${selectedPdf ? "is-ready" : ""}`}>
+                                                    <input type="file" accept=".pdf" hidden {...register("pdf", { required: true, onChange: handlePdfChange })} />
+                                                    <i className={`bi ${selectedPdf ? "bi-file-earmark-check-fill" : "bi-file-earmark-pdf"}`}></i>
+                                                    <p>{selectedPdf ? "PDF Listo" : "PDF"}</p>
                                                     <span>Subir archivo</span>
                                                 </label>
                                             </div>
-
                                             <div className="d-flex flex-column gap-2">
                                                 <div className="form-check form-switch d-flex align-items-center gap-2 m-0 p-0">
-                                                    <input
-                                                        className="form-check-input m-0 cursor-pointer"
-                                                        type="checkbox"
-                                                        id="xmlToggle"
-                                                        checked={showXmlPreview}
-                                                        onChange={() =>
-                                                            setShowXmlPreview(
-                                                                !showXmlPreview,
-                                                            )
-                                                        }
-                                                    />
-                                                    <label
-                                                        className="switch-label-v4 cursor-pointer m-0"
-                                                        htmlFor="xmlToggle"
-                                                    >
-                                                        Vista XML
-                                                    </label>
+                                                    <input className="form-check-input m-0 cursor-pointer" type="checkbox" id="xmlToggle" checked={showXmlPreview} onChange={() => setShowXmlPreview(!showXmlPreview)} />
+                                                    <label className="switch-label-v4 cursor-pointer m-0" htmlFor="xmlToggle">Vista XML</label>
                                                 </div>
-                                                <label
-                                                    className={`file-zone-v4 ${selectedXml ? "is-ready" : ""}`}
-                                                >
-                                                    <input
-                                                        type="file"
-                                                        accept=".xml"
-                                                        hidden
-                                                        {...register("xml", {
-                                                            required: false,
-                                                            onChange:
-                                                                handleXmlChange,
-                                                        })}
-                                                    />
-                                                    <i
-                                                        className={`bi ${selectedXml ? "bi-file-earmark-code-fill" : "bi-filetype-xml"}`}
-                                                    ></i>
-                                                    <p>
-                                                        {selectedXml
-                                                            ? "XML Listo"
-                                                            : "XML (Opcional)"}
-                                                    </p>
-                                                    <span>
-                                                        Sincronizar Datos
-                                                    </span>
+                                                <label className={`file-zone-v4 ${selectedXml ? "is-ready" : ""}`}>
+                                                    <input type="file" accept=".xml" hidden {...register("xml", { required: false, onChange: handleXmlChange })} />
+                                                    <i className={`bi ${selectedXml ? "bi-file-earmark-code-fill" : "bi-filetype-xml"}`}></i>
+                                                    <p>{selectedXml ? "XML Listo" : "XML (Opcional)"}</p>
+                                                    <span>Sincronizar Datos</span>
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
-
                                     <div className="full-width-v4 mt-4 text-center">
-                                        <button
-                                            type="submit"
-                                            className="btn-modern-primary w-100 py-3 justify-content-center"
-                                            disabled={isLoading}
-                                        >
-                                            {isLoading ? (
-                                                <Spinner
-                                                    animation="border"
-                                                    size="sm"
-                                                />
-                                            ) : (
-                                                <>
-                                                    <i className="bi bi-send-plus-fill me-2"></i>{" "}
-                                                    Enviar Factura
-                                                </>
-                                            )}
+                                        <button type="submit" className="btn-modern-primary w-100 py-3 justify-content-center" disabled={isLoading}>
+                                            {isLoading ? <Spinner animation="border" size="sm" /> : <><i className="bi bi-send-plus-fill me-2"></i> Enviar Factura</>}
                                         </button>
-                                        <p
-                                            className="text-muted mt-3 mb-0"
-                                            style={{
-                                                fontSize: "0.6rem",
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            Validado por sistema de gestión
-                                            Mundo Verde
-                                        </p>
+                                        <p className="text-muted mt-3 mb-0" style={{ fontSize: "0.6rem", fontWeight: 600 }}>Validado por sistema de gestión Mundo Verde</p>
                                     </div>
                                 </div>
                             </form>
                         </div>
                     </div>
-                ) : (
+                ) : activeTab === "dashboard" ? (
                     <div className="dashboard-v3">
                         <div className="filter-bar-v3">
                             <div className="filter-group-v3">
                                 <label>Emisor</label>
-                                <input
-                                    name="emisor"
-                                    value={filters.emisor}
-                                    onChange={handleFilterChange}
-                                    placeholder="Buscar por nombre..."
-                                />
+                                <input name="emisor" value={filters.emisor} onChange={handleFilterChange} placeholder="Buscar por nombre..." />
                             </div>
                             <div className="filter-group-v3">
                                 <label>NIT</label>
-                                <input
-                                    name="nit"
-                                    value={filters.nit}
-                                    onChange={handleFilterChange}
-                                    placeholder="NIT..."
-                                />
+                                <input name="nit" value={filters.nit} onChange={handleFilterChange} placeholder="NIT..." />
                             </div>
                             <div className="filter-group-v3">
                                 <label>Desde</label>
-                                <input
-                                    type="date"
-                                    name="from"
-                                    value={filters.from}
-                                    onChange={handleFilterChange}
-                                />
+                                <input type="date" name="from" value={filters.from} onChange={handleFilterChange} />
                             </div>
                             <div className="filter-group-v3">
                                 <label>Hasta</label>
-                                <input
-                                    type="date"
-                                    name="to"
-                                    value={filters.to}
-                                    onChange={handleFilterChange}
-                                />
+                                <input type="date" name="to" value={filters.to} onChange={handleFilterChange} />
                             </div>
-                            <button
-                                className="btn-filter-v3"
-                                onClick={() => fetchInvoices(1)}
-                                disabled={isFetchingInvoices}
-                            >
-                                {isFetchingInvoices ? (
-                                    <Spinner animation="border" size="sm" />
-                                ) : (
-                                    <>
-                                        <i className="bi bi-search"></i> Filtrar
-                                    </>
-                                )}
+                            <button className="btn-filter-v3" onClick={() => fetchInvoices(1)} disabled={isFetchingInvoices}>
+                                {isFetchingInvoices ? <Spinner animation="border" size="sm" /> : <><i className="bi bi-search"></i> Filtrar</>}
                             </button>
                         </div>
 
                         <div className="pagination-bar-v3">
                             <div className="pagination-compact-v3">
-                                <span className="pagination-info-v3 text-nowrap">
-                                    Pág {currentPage} de {totalPages}
-                                </span>
+                                <span className="pagination-info-v3 text-nowrap">Pág {currentPage} de {totalPages}</span>
                                 <div className="pagination-nav-v3">
-                                    <button
-                                        className="nav-btn-v3"
-                                        disabled={
-                                            currentPage === 1 ||
-                                            isFetchingInvoices
-                                        }
-                                        onClick={() => fetchInvoices(1)}
-                                        title="Primera página"
-                                    >
-                                        <i className="bi bi-chevron-double-left"></i>
-                                    </button>
-                                    <button
-                                        className="nav-btn-v3"
-                                        disabled={
-                                            currentPage === 1 ||
-                                            isFetchingInvoices
-                                        }
-                                        onClick={() =>
-                                            fetchInvoices(currentPage - 1)
-                                        }
-                                        title="Página anterior"
-                                    >
-                                        <i className="bi bi-chevron-left"></i>
-                                    </button>
-                                    <button
-                                        className="nav-btn-v3"
-                                        disabled={
-                                            currentPage === totalPages ||
-                                            isFetchingInvoices
-                                        }
-                                        onClick={() =>
-                                            fetchInvoices(currentPage + 1)
-                                        }
-                                        title="Siguiente página"
-                                    >
-                                        <i className="bi bi-chevron-right"></i>
-                                    </button>
-                                    <button
-                                        className="nav-btn-v3"
-                                        disabled={
-                                            currentPage === totalPages ||
-                                            isFetchingInvoices
-                                        }
-                                        onClick={() =>
-                                            fetchInvoices(totalPages)
-                                        }
-                                        title="Última página"
-                                    >
-                                        <i className="bi bi-chevron-double-right"></i>
-                                    </button>
+                                    <button className="nav-btn-v3" disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(1)}><i className="bi bi-chevron-double-left"></i></button>
+                                    <button className="nav-btn-v3" disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(currentPage - 1)}><i className="bi bi-chevron-left"></i></button>
+                                    <button className="nav-btn-v3" disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(currentPage + 1)}><i className="bi bi-chevron-right"></i></button>
+                                    <button className="nav-btn-v3" disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(totalPages)}><i className="bi bi-chevron-double-right"></i></button>
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-auto pb-3">
-                            <table className="table-v3">
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: "120px" }}>
-                                            Fecha
-                                        </th>
-                                        <th>Emisor</th>
-                                        <th style={{ width: "160px" }}>
-                                            Serie / DTE
-                                        </th>
-                                        <th style={{ width: "150px" }}>
-                                            Monto
-                                        </th>
-                                        <th className="text-end">Documentos</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {invoices.length > 0 ? (
-                                        invoices.map((inv, i) => (
-                                            <tr key={i}>
-                                                <td className="col-date-v3">
-                                                    {formatDate(
-                                                        inv.fecha_emision,
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    <div className="emisor-wrapper-v3">
-                                                        <span className="emisor-name-v3 text-uppercase">
-                                                            {inv.emisor_nombre}
+
+                        <div className="overflow-auto pb-3" style={{ minHeight: '400px' }}>
+                            {isFetchingInvoices ? (
+                                <div className="d-flex flex-column align-items-center justify-content-center py-5">
+                                    <Spinner animation="border" variant="primary" className="mb-3" />
+                                    <span className="fw-950 x-small text-muted">CONSULTANDO SAT...</span>
+                                </div>
+                            ) : (
+                                <table className="table-v3">
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: "120px" }}>Fecha</th>
+                                            <th>Emisor</th>
+                                            <th style={{ width: "160px" }}>Serie / DTE</th>
+                                            <th style={{ width: "150px" }}>Monto</th>
+                                            <th className="text-end">Documentos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {invoices.length > 0 ? (
+                                            invoices.map((inv, i) => (
+                                                <tr key={i}>
+                                                    <td className="col-date-v3">{formatDate(inv.fecha_emision)}</td>
+                                                    <td>
+                                                        <div className="emisor-wrapper-v3">
+                                                            <span className="emisor-name-v3 text-uppercase">{inv.emisor_nombre}</span>
+                                                            <span className="emisor-nit-v3">NIT: {inv.emisor_nit}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="d-flex flex-column align-items-start">
+                                                            <span className="serie-badge-v3">{inv.serie}</span>
+                                                            <span className="dte-num-v3">{inv.numero_dte}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="amount-v3">
+                                                            <span>{inv.moneda}</span>
+                                                            {new Intl.NumberFormat("es-GT", { minimumFractionDigits: 2 }).format(inv.monto_total)}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="doc-actions-v3">
+                                                            {inv.files_url?.pdfLink && (
+                                                                <a href={inv.files_url.pdfLink} target="_blank" rel="noreferrer" className="btn-doc-v3 is-pdf"><i className="bi bi-file-earmark-pdf-fill"></i></a>
+                                                            )}
+                                                            {inv.files_url?.xmlLink && (
+                                                                <a href={inv.files_url.xmlLink} target="_blank" rel="noreferrer" className="btn-doc-v3 is-xml"><i className="bi bi-filetype-xml"></i></a>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr><td colSpan="5" className="text-center py-5 opacity-40 fw-950 fs-7">NO HAY FACTURAS DISPONIBLES</td></tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="dashboard-v3 animate-in">
+                        <div className="pane-header-v3" style={{ background: '#f8fafc', padding: '1rem 1.25rem' }}>
+                            <div className="d-flex align-items-center gap-2">
+                                <i className="bi bi-person-check-fill text-primary"></i>
+                                <span>Registro de Envíos del Portal</span>
+                            </div>
+                        </div>
+                        <div className="flex-grow-1 overflow-auto" style={{ minHeight: "450px" }}>
+                            {isFetchingPortalHistory ? (
+                                <div className="d-flex flex-column align-items-center justify-content-center h-100 py-5">
+                                    <Spinner animation="border" variant="primary" className="mb-3" />
+                                    <span className="fw-950 x-small text-muted">CARGANDO REGISTROS...</span>
+                                </div>
+                            ) : (
+                                <table className="table-v3">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha Envío</th>
+                                            <th>Usuario</th>
+                                            <th>Correo</th>
+                                            <th>Acción</th>
+                                            <th className="text-end">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {portalHistory.length > 0 ? (
+                                            portalHistory.map((item, idx) => (
+                                                <tr key={idx}>
+                                                    <td className="col-date-v3">
+                                                        {new Date(item.createdAt).toLocaleString()}
+                                                    </td>
+                                                    <td>
+                                                        <span className="fw-bold" style={{ fontSize: '0.8rem' }}>
+                                                            {item.user ? `${item.user.firstName || ''} ${item.user.lastName || ''}` : 'Usuario Externo'}
                                                         </span>
-                                                        <span className="emisor-nit-v3">
-                                                            NIT:{" "}
-                                                            {inv.emisor_nit}
+                                                    </td>
+                                                    <td>
+                                                        <span className="text-muted" style={{ fontSize: '0.7rem' }}>
+                                                            {item.user?.email || '-'}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex flex-column align-items-start">
-                                                        <span className="serie-badge-v3">
-                                                            {inv.serie}
+                                                    </td>
+                                                    <td>
+                                                        <span className="badge bg-light text-dark" style={{ fontSize: '0.65rem', border: '1px solid #e2e8f0' }}>
+                                                            Ejecución {item.serviceId}
                                                         </span>
-                                                        <span className="dte-num-v3">
-                                                            {inv.numero_dte}
+                                                    </td>
+                                                    <td className="text-end">
+                                                        <span className={`badge ${item.status === 'success' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`} style={{ fontSize: '0.65rem' }}>
+                                                            {item.status.toUpperCase()}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="amount-v3">
-                                                        <span>
-                                                            {inv.moneda}
-                                                        </span>
-                                                        {new Intl.NumberFormat(
-                                                            "es-GT",
-                                                            {
-                                                                minimumFractionDigits: 2,
-                                                            },
-                                                        ).format(
-                                                            inv.monto_total,
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="doc-actions-v3">
-                                                        {inv.files_url
-                                                            ?.pdfLink && (
-                                                            <a
-                                                                href={
-                                                                    inv
-                                                                        .files_url
-                                                                        .pdfLink
-                                                                }
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="btn-doc-v3 is-pdf"
-                                                                title="Descargar PDF"
-                                                            >
-                                                                <i className="bi bi-file-earmark-pdf-fill"></i>
-                                                            </a>
-                                                        )}
-                                                        {inv.files_url
-                                                            ?.xmlLink && (
-                                                            <a
-                                                                href={
-                                                                    inv
-                                                                        .files_url
-                                                                        .xmlLink
-                                                                }
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="btn-doc-v3 is-xml"
-                                                                title="Descargar XML"
-                                                            >
-                                                                <i className="bi bi-filetype-xml"></i>
-                                                            </a>
-                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" className="text-center py-5">
+                                                    <div className="opacity-20 d-flex flex-column align-items-center">
+                                                        <i className="bi bi-clock-history" style={{ fontSize: "3rem" }}></i>
+                                                        <span className="fw-950 x-small mt-2">NO HAY ACTIVIDAD REGISTRADA</span>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td
-                                                colSpan="5"
-                                                className="text-center py-5 opacity-40 fw-950 fs-7"
-                                            >
-                                                NO HAY FACTURAS DISPONIBLES
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                        )}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     </div>
                 )}
