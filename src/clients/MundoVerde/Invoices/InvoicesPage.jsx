@@ -44,10 +44,41 @@ const MundoVerdeInvoices = () => {
     const [showPdfPreview, setShowPdfPreview] = useState(true);
     const [showXmlPreview, setShowXmlPreview] = useState(false);
 
+    const fetchInvoices = async (page = 1) => {
+        setIsFetchingInvoices(true);
+        setCurrentPage(page);
+        try {
+            const { emisor, nit, from, to } = filters;
+            const response = await garooInstance.get(`/services/execute/facturas-sat`, {
+                params: {
+                    page,
+                    pageSize: 10,
+                    emisor,
+                    nit,
+                    from,
+                    to
+                }
+            });
+            
+            if (response.data) {
+                setInvoices(response.data.data || []);
+                setTotalPages(response.data.meta?.totalPages || 1);
+            }
+        } catch (error) {
+            console.error("Error fetching invoices:", error);
+            setToastTitle("Error Dashboard");
+            setToastMessage("No se pudo conectar con el SAT o la base de datos.");
+            setToastVariant("danger");
+            setShowToast(true);
+        } finally {
+            setIsFetchingInvoices(false);
+        }
+    };
+
     const fetchPortalHistory = async () => {
         setIsFetchingPortalHistory(true);
         try {
-            const response = await garooInstance.get(`/services/history/facturas`);
+            const response = await garooInstance.get(`/services/history/facturas-sat`);
             setPortalHistory(response.data || []);
         } catch (error) {
             void error;
