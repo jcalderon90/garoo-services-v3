@@ -655,7 +655,9 @@ const MundoVerdeInvoices = () => {
                 <p className="opacity-75">
                     Gira tu dispositivo para acceder al portal de facturación.
                 </p>
-                <div className="main-content-layout p-2">
+            </div>
+
+            <div className="main-content-layout p-2">
                 <div className="header-wrapper-v3">
                     <div className="d-flex align-items-center gap-3">
                         <h1
