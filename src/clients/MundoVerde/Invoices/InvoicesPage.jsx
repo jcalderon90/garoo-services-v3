@@ -195,7 +195,8 @@ const MundoVerdeInvoices = () => {
                 formData.append("xml", xmlBlob, xmlFile.name);
             }
 
-            const response = await garooInstance.post("/services/execute/facturas", formData, {
+            const queryStr = `?nit=${encodeURIComponent(data.nit.trim())}&serie=${encodeURIComponent(data.serie.trim())}`;
+            const response = await garooInstance.post(`/services/execute/facturas${queryStr}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
