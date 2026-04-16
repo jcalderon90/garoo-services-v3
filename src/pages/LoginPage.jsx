@@ -2,23 +2,40 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import garooLogo from "../assets/img/garoo-logo.png";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const loginSchema = z.object({
+    email: z.string().email("Formato de correo inválido").min(1, "El correo es requerido"),
+    password: z.string().min(1, "La contraseña es requerida"),
+});
 
 const LoginPage = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: "user@garoo.ai",
+            password: "",
+        },
+    });
+
+    const onSubmit = async (data) => {
         setError("");
         setIsLoading(true);
 
         try {
-            await login(email, password);
+            await login(data.email, data.password);
             navigate("/");
         } catch (err) {
             setError(err.message);
@@ -225,29 +242,27 @@ const LoginPage = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="input-group-v3">
                         <label className="label-v3">Usuario o Email</label>
                         <input 
                             type="email" 
-                            className="input-v3"
+                            className={`input-v3 ${errors.email ? 'border-danger' : ''}`}
                             placeholder="user@garoo.ai"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
+                            {...register("email")}
                         />
+                        {errors.email && <span className="text-danger" style={{fontSize: "0.75rem", marginTop: "4px", display: "inline-block"}}>{errors.email.message}</span>}
                     </div>
 
                     <div className="input-group-v3">
                         <label className="label-v3">Contraseña</label>
                         <input 
                             type="password" 
-                            className="input-v3"
+                            className={`input-v3 ${errors.password ? 'border-danger' : ''}`}
                             placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
+                            {...register("password")}
                         />
+                        {errors.password && <span className="text-danger" style={{fontSize: "0.75rem", marginTop: "4px", display: "inline-block"}}>{errors.password.message}</span>}
                     </div>
 
                     <button 
