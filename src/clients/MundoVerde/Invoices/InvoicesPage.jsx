@@ -100,6 +100,7 @@ const MundoVerdeInvoices = () => {
         } finally {
             setIsFetchingInvoices(false);
         }
+    };
 
     const fetchPortalHistory = async () => {
         setIsFetchingPortalHistory(true);
