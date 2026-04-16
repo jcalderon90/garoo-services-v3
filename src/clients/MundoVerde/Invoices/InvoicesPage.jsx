@@ -38,6 +38,7 @@ const MundoVerdeInvoices = () => {
     // Portal History States (Logging usage)
     const [portalHistory, setPortalHistory] = useState([]);
     const [isFetchingPortalHistory, setIsFetchingPortalHistory] = useState(false);
+    const [orgUsers, setOrgUsers] = useState([]);
 
     const [showToast, setShowToast] = useState(false);
     const [toastTitle, setToastTitle] = useState("");
@@ -124,8 +125,20 @@ const MundoVerdeInvoices = () => {
         }
     };
 
+    const fetchOrgUsers = async () => {
+        try {
+            const response = await garooInstance.get(`/services/org-users/mundo-verde`);
+            setOrgUsers(response.data || []);
+        } catch (error) {
+            console.error("Error fetching org users:", error);
+        }
+    };
+
     useEffect(() => {
-        if (activeTab === "dashboard") fetchInvoices(1);
+        if (activeTab === "dashboard") {
+            fetchInvoices(1);
+            fetchOrgUsers();
+        }
         if (activeTab === "portal_history") fetchPortalHistory();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
@@ -875,7 +888,21 @@ const MundoVerdeInvoices = () => {
                             </div>
                             <div className="filter-group-v3">
                                 <label>Usuario</label>
-                                <input name="portalUser" value={filters.portalUser} onChange={handleFilterChange} placeholder="Nombre usuario..." />
+                                <select 
+                                    name="portalUser" 
+                                    className="form-select fs-7 py-1" 
+                                    value={filters.portalUser} 
+                                    onChange={handleFilterChange}
+                                    style={{ height: '34.4px', minWidth: '160px' }}
+                                >
+                                    <option value="">Todos los usuarios</option>
+                                    <option value="Mundo Verde (Migrado)">Mundo Verde (Migrado)</option>
+                                    {orgUsers.map(u => (
+                                        <option key={u._id} value={`${u.firstName} ${u.lastName}`.trim()}>
+                                            {u.firstName} {u.lastName}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="filter-group-v3">
                                 <label>Desde</label>
