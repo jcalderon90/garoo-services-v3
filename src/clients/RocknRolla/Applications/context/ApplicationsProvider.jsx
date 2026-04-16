@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 import { get_applications } from "../api/applicationsAPI";
-import { getNationality, getPosition, getEmail, getFullName } from "../utils/workerDataHelpers";
+import { getNationality, getPosition } from "../utils/workerDataHelpers";
 
 const ApplicationsContext = createContext();
 
@@ -145,7 +145,7 @@ export const ApplicationsProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, [dataLoaded, allData.length]); // Cambiado de allData a allData.length para evitar bucle
+    }, [dataLoaded, allData]);
 
     useEffect(() => {
         if (!dataLoaded) {

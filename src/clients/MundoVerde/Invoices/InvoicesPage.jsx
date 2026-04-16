@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import RB_Toast from "../../../components/RB_Toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { garooInstance } from "../../../api/axios";
 import { useAuth } from "../../../context/AuthContext";
 import { Spinner } from "react-bootstrap";
@@ -134,6 +134,8 @@ const MundoVerdeInvoices = () => {
         }
     };
 
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
         if (activeTab === "dashboard") {
             fetchInvoices(1);
@@ -142,6 +144,21 @@ const MundoVerdeInvoices = () => {
         if (activeTab === "portal_history") fetchPortalHistory();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        if (activeTab === "dashboard") {
+            const delayDebounceFn = setTimeout(() => {
+                fetchInvoices(1);
+            }, 500);
+            return () => clearTimeout(delayDebounceFn);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filters]);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -371,7 +388,7 @@ const MundoVerdeInvoices = () => {
                     font-weight: 800;
                     color: #64748b;
                     background: transparent;
-                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     display: flex;
                     align-items: center;
                     gap: 6px;
@@ -549,10 +566,11 @@ const MundoVerdeInvoices = () => {
                     letter-spacing: 0.05em;
                     margin-bottom: 2px;
                 }
-                .filter-group-v3 input {
+                .filter-group-v3 input,
+                .filter-group-v3 select {
                     border: 1px solid #e2e8f0; 
                     border-radius: 8px; 
-                    padding: 6px 12px; 
+                    padding: 0px 12px; 
                     font-size: 0.75rem; 
                     font-weight: 700;
                     color: #1e293b;
@@ -561,23 +579,17 @@ const MundoVerdeInvoices = () => {
                     width: 100%;
                     height: 34px;
                 }
-                .filter-group-v3 input:focus { border-color: var(--primary); background: white; outline: none; }
-
-                .btn-filter-v3 {
-                    background: var(--primary);
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    padding: 0 16px;
-                    font-size: 0.75rem;
-                    font-weight: 850;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    transition: all 0.2s;
-                    height: 34px;
+                .filter-group-v3 select {
+                    padding-right: 30px;
+                    appearance: none;
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
+                    background-repeat: no-repeat;
+                    background-position: right 10px center;
                 }
-                .btn-filter-v3:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+                .filter-group-v3 input:focus,
+                .filter-group-v3 select:focus { border-color: var(--primary); background-color: white; outline: none; }
+
+                /* BTN FILTER REMOVED */
 
                 /* TABLE STYLING */
                 .table-v3 { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -596,7 +608,7 @@ const MundoVerdeInvoices = () => {
                     padding: 0.5rem 1.25rem; 
                     border-bottom: 1px solid #f1f5f9; 
                     vertical-align: middle; 
-                    transition: background 0.2s;
+                    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
                 .col-date-v3 { font-size: 0.75rem; font-weight: 800; color: #64748b; white-space: nowrap; }
@@ -629,7 +641,7 @@ const MundoVerdeInvoices = () => {
                     background: white;
                     color: #475569;
                     font-size: 1.1rem;
-                    transition: all 0.2s;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     text-decoration: none;
                 }
                 .btn-doc-v3:hover { transform: scale(1.05); }
@@ -664,7 +676,7 @@ const MundoVerdeInvoices = () => {
                     background: white;
                     color: var(--primary);
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     font-size: 0.9rem;
                     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
                 }
@@ -689,6 +701,14 @@ const MundoVerdeInvoices = () => {
                     color: #64748b;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
+                }
+
+                @keyframes subtleFloat {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-4px); }
+                }
+                .idle-icon-anim {
+                    animation: subtleFloat 4s ease-in-out infinite;
                 }
             `}</style>
 
@@ -792,7 +812,7 @@ const MundoVerdeInvoices = () => {
                                             <iframe src={pdfUrl} width="100%" height="100%" title="PDF" style={{ border: "none", display: "block" }} />
                                         ) : (
                                             <div className="d-flex flex-column align-items-center justify-content-center h-100 opacity-20">
-                                                <i className="bi bi-file-earmark-pdf" style={{ fontSize: "3rem" }}></i>
+                                                <i className="bi bi-file-earmark-pdf idle-icon-anim" style={{ fontSize: "3rem" }}></i>
                                                 <span className="fw-950 x-small mt-3">VISTA PREVIA PDF</span>
                                             </div>
                                         )}
@@ -817,7 +837,7 @@ const MundoVerdeInvoices = () => {
 
                             {!showPdfPreview && !showXmlPreview && (
                                 <div className="pane-v3 h-100 d-flex flex-column align-items-center justify-content-center opacity-20">
-                                    <i className="bi bi-eye-slash" style={{ fontSize: "3.5rem" }}></i>
+                                    <i className="bi bi-eye-slash idle-icon-anim" style={{ fontSize: "3.5rem" }}></i>
                                     <span className="fw-950 x-small mt-3">VISTAS PREVIAS DESACTIVADAS</span>
                                 </div>
                             )}
@@ -891,10 +911,9 @@ const MundoVerdeInvoices = () => {
                                 <label>Usuario</label>
                                 <select 
                                     name="portalUser" 
-                                    className="form-select fs-7 py-1" 
                                     value={filters.portalUser} 
                                     onChange={handleFilterChange}
-                                    style={{ height: '34.4px', minWidth: '160px' }}
+                                    style={{ height: '34px' }}
                                 >
                                     <option value="">Todos los usuarios</option>
                                     {orgUsers.map(u => (
@@ -912,9 +931,6 @@ const MundoVerdeInvoices = () => {
                                 <label>Hasta</label>
                                 <input type="date" name="to" value={filters.to} onChange={handleFilterChange} />
                             </div>
-                            <button className="btn-filter-v3" onClick={() => fetchInvoices(1)} disabled={isFetchingInvoices}>
-                                {isFetchingInvoices ? <Spinner animation="border" size="sm" /> : <><i className="bi bi-search"></i> Filtrar</>}
-                            </button>
                         </div>
 
                         <div className="pagination-bar-v3">

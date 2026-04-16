@@ -9,8 +9,7 @@ const AdminPortal = () => {
     const [organizations, setOrganizations] = useState([]);
     const [users, setUsers] = useState([]);
     const [services, setServices] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // Removed unused loading/error state
     const [activeTab, setActiveTab] = useState('organizations');
     
     // Modals & Forms State
@@ -20,7 +19,6 @@ const AdminPortal = () => {
     const [formData, setFormData] = useState({});
 
     const fetchData = async () => {
-        setLoading(true);
         try {
             const [orgsRes, usersRes, servicesRes] = await Promise.all([
                 garooInstance.get("/admin/organizations"),
@@ -30,12 +28,8 @@ const AdminPortal = () => {
             setOrganizations(orgsRes.data);
             setUsers(usersRes.data);
             setServices(servicesRes.data);
-            setError(null);
-        } catch (err) {
-            console.error("Error fetching admin data:", err);
-            setError("Error al obtener datos de administración.");
-        } finally {
-            setLoading(false);
+        } catch (e) {
+            console.error("Error fetching admin data:", e);
         }
     };
 
@@ -106,7 +100,7 @@ const AdminPortal = () => {
                 await garooInstance.delete(endpoint);
                 Swal.fire('Eliminado', 'El registro ha sido borrado.', 'success');
                 fetchData();
-            } catch (err) {
+            } catch (ignore) {
                 Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
             }
         }

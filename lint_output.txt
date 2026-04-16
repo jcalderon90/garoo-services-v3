@@ -1,0 +1,28 @@
+
+> roi-calculator@0.0.0 lint
+> eslint .
+
+(node:29522) ESLintEnvWarning: /* eslint-env */ comments are no longer recognized when linting with flat config and will be reported as errors as of v10.0.0. Replace them with /* global */ comments or define globals in your config file. See https://eslint.org/docs/latest/use/configure/migration-guide#eslint-env-configuration-comments for details. Found in /Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/fix_styles.js at line 1.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/fix_styles.js
+  2:12  error  'require' is not defined  no-undef
+
+/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/src/Garoo/Admin/AdminPortal.jsx
+  103:22  error  'err' is defined but never used  no-unused-vars
+
+/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/src/Garoo/AgentOnboarding/AgentOnboardingPage.jsx
+  1:10  error  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+  1:20  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/src/clients/Spectrum/Leads/components/LeadDetails.jsx
+  39:8  warning  React Hook useEffect has missing dependencies: 'handleAction' and 'lead'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/src/context/AuthContext.jsx
+  6:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/Garoo portal/garoo-services-v3/src/context/ServicesContext.jsx
+  7:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+✖ 7 problems (4 errors, 3 warnings)
+

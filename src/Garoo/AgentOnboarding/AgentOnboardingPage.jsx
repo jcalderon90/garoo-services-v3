@@ -1,4 +1,4 @@
-import { useRef } from "react";
+// React dependencies removed because they are unused 
 import { PHASES } from "./config";
 import { useOnboarding } from "./hooks/useOnboarding";
 import PhaseNavSidebar from "./components/PhaseNavSidebar";

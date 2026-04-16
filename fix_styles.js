@@ -1,3 +1,4 @@
+/* global require */
 const fs = require('fs');
 const path = '/Users/jorgecalderon/Desktop/PROYECTOS/Garoo/garoo-frontend/src/pages/RocknRolla/ApplicationsPage.jsx';
 
