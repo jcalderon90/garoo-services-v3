@@ -28,6 +28,7 @@ const MundoVerdeInvoices = () => {
     const [filters, setFilters] = useState({
         emisor: "",
         nit: "",
+        portalUser: "",
         from: "",
         to: "",
     });
@@ -52,13 +53,14 @@ const MundoVerdeInvoices = () => {
         setIsFetchingInvoices(true);
         setCurrentPage(page);
         try {
-            const { emisor, nit, from, to } = filters;
+            const { emisor, nit, portalUser, from, to } = filters;
             const response = await garooInstance.get(`/services/execute/facturas-sat`, {
                 params: {
                     page,
                     pageSize: 10,
                     emisor,
                     nit,
+                    user: portalUser, // Filtro por usuario
                     from,
                     to,
                     orgSlug: 'mundo-verde'  // Le dice al backend qué org consultar (necesario para Admin)
@@ -870,6 +872,10 @@ const MundoVerdeInvoices = () => {
                             <div className="filter-group-v3">
                                 <label>NIT</label>
                                 <input name="nit" value={filters.nit} onChange={handleFilterChange} placeholder="NIT..." />
+                            </div>
+                            <div className="filter-group-v3">
+                                <label>Usuario</label>
+                                <input name="portalUser" value={filters.portalUser} onChange={handleFilterChange} placeholder="Nombre usuario..." />
                             </div>
                             <div className="filter-group-v3">
                                 <label>Desde</label>
