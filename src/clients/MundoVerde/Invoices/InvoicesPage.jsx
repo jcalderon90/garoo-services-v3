@@ -921,7 +921,15 @@ const MundoVerdeInvoices = () => {
                                                     <td>
                                                         <div className="emisor-wrapper-v3">
                                                             <span className="emisor-name-v3 text-uppercase">{inv.emisor_nombre}</span>
-                                                            <span className="emisor-nit-v3">NIT: {inv.emisor_nit}</span>
+                                                            <div className="d-flex align-items-center gap-2">
+                                                                <span className="emisor-nit-v3">NIT: {inv.emisor_nit}</span>
+                                                                {inv.portal_user && (
+                                                                    <span className="badge bg-light text-primary border fw-900" style={{ fontSize: '10px', padding: '1px 4px' }}>
+                                                                        <i className="bi bi-person-fill me-1"></i>
+                                                                        {inv.portal_user}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </td>
                                                     <td>
