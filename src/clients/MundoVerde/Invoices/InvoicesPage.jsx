@@ -25,13 +25,21 @@ const MundoVerdeInvoices = () => {
     const [activeTab, setActiveTab] = useState("form");
     const [invoices, setInvoices] = useState([]);
     const [isFetchingInvoices, setIsFetchingInvoices] = useState(false);
-    const [filters, setFilters] = useState({
+    const initialFilters = {
         emisor: "",
         nit: "",
         portalUser: "",
         from: "",
         to: "",
-    });
+        matched: "",
+        confirmed: "",
+    };
+    const [filters, setFilters] = useState(initialFilters);
+
+    const resetFilters = () => {
+        setFilters(initialFilters);
+        // fetchInvoices will be triggered by the useEffect that watches filters
+    };
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
@@ -54,17 +62,19 @@ const MundoVerdeInvoices = () => {
         setIsFetchingInvoices(true);
         setCurrentPage(page);
         try {
-            const { emisor, nit, portalUser, from, to } = filters;
+            const { emisor, nit, portalUser, from, to, matched, confirmed } = filters;
             const response = await garooInstance.get(`/services/execute/facturas-sat`, {
                 params: {
                     page,
                     pageSize: 10,
                     emisor,
                     nit,
-                    user: portalUser, // Filtro por usuario
+                    user: portalUser,
                     from,
                     to,
-                    orgSlug: 'mundo-verde'  // Le dice al backend qué org consultar (necesario para Admin)
+                    matched,
+                    confirmed,
+                    orgSlug: 'mundo-verde'
                 }
             });
             
@@ -532,52 +542,59 @@ const MundoVerdeInvoices = () => {
                     margin: 0 auto;
                 }
 
-                .filter-bar-v3 {
+                /* DASHBOARD HEADER V4 COMPACT */
+                .dashboard-header-v4 {
+                    background: white;
+                    border-bottom: 2px solid #e2e8f0;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                    position: sticky;
+                    top: 0;
+                    z-index: 10;
+                    margin-bottom: 0.5rem;
+                }
+                .filter-row-v4 {
                     display: flex;
                     gap: 0.75rem;
-                    background: #fff;
-                    padding: 0.85rem 1.25rem;
+                    padding: 0.5rem 1rem;
                     align-items: flex-end;
-                    flex-wrap: wrap;
                 }
-
-                .pagination-bar-v3 {
-                    display: flex;
+                .filter-row-v4.secondary-row {
+                    background: white;
+                    border-top: 1px solid #f1f5f9;
+                    padding: 0.35rem 1rem;
                     justify-content: space-between;
-                    align-items: center;
-                    background: #f8fafc;
-                    padding: 0.6rem 1.25rem;
-                    border-top: 1px solid #e2e8f0;
-                    border-bottom: 1px solid #e2e8f0;
                 }
 
                 .filter-group-v3 { 
                     display: flex; 
                     flex-direction: column; 
-                    gap: 6px; 
-                    flex: 1; /* Los filtros ahora crecen para llenar el espacio */
-                    min-width: 120px;
+                    gap: 2px; 
                 }
                 .filter-group-v3 label { 
-                    font-size: 0.55rem; 
-                    font-weight: 950; 
-                    color: #94a3b8; 
+                    font-size: 0.52rem; 
+                    font-weight: 800; 
+                    color: #64748b; 
                     text-transform: uppercase; 
-                    letter-spacing: 0.05em;
-                    margin-bottom: 2px;
+                    letter-spacing: 0.02em;
                 }
                 .filter-group-v3 input,
                 .filter-group-v3 select {
-                    border: 1px solid #e2e8f0; 
+                    border: 1.2px solid #e2e8f0; 
                     border-radius: 8px; 
-                    padding: 0px 12px; 
-                    font-size: 0.75rem; 
-                    font-weight: 700;
+                    padding: 0 10px; 
+                    font-size: 0.72rem; 
+                    font-weight: 600;
                     color: #1e293b;
-                    background: #f8fafc;
+                    background: white;
                     transition: all 0.2s;
+                    height: 30px;
                     width: 100%;
-                    height: 34px;
+                }
+                .filter-group-v3 input:focus,
+                .filter-group-v3 select:focus {
+                    border-color: #3b82f6;
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                 }
                 .filter-group-v3 select {
                     padding-right: 30px;
@@ -595,23 +612,23 @@ const MundoVerdeInvoices = () => {
                 .table-v3 { width: 100%; border-collapse: separate; border-spacing: 0; }
                 .table-v3 th {
                     background: #f8fafc; 
-                    padding: 0.75rem 1.25rem; 
-                    font-size: 0.65rem; 
-                    font-weight: 950; 
+                    padding: 0.5rem 1rem; 
+                    font-size: 0.6rem; 
+                    font-weight: 850; 
                     text-transform: uppercase; 
-                    color: #64748b;
+                    color: #475569;
                     letter-spacing: 0.05em;
-                    border-bottom: 1px solid #f1f5f9;
+                    border-bottom: 2px solid #e2e8f0;
                 }
                 .table-v3 tr:hover td { background: #fbfcfe; }
                 .table-v3 td { 
-                    padding: 0.5rem 1.25rem; 
+                    padding: 0.4rem 1rem; 
                     border-bottom: 1px solid #f1f5f9; 
                     vertical-align: middle; 
-                    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition: background 0.3s ease;
                 }
 
-                .col-date-v3 { font-size: 0.75rem; font-weight: 800; color: #64748b; white-space: nowrap; }
+                .col-date-v3 { font-size: 0.7rem; font-weight: 700; color: #64748b; white-space: nowrap; }
                 
                 .emisor-wrapper-v3 { display: flex; flex-direction: column; gap: 2px; }
                 .emisor-name-v3 { font-size: 0.8rem; font-weight: 900; color: #1e293b; line-height: 1.3; }
@@ -619,29 +636,29 @@ const MundoVerdeInvoices = () => {
 
                 .serie-badge-v3 {
                     display: inline-flex;
-                    padding: 4px 10px;
+                    padding: 3px 8px;
                     background: #eff6ff;
                     color: var(--primary);
-                    border-radius: 8px;
-                    font-size: 0.7rem;
-                    font-weight: 950;
-                    letter-spacing: 0.5px;
+                    border-radius: 6px;
+                    font-size: 0.62rem;
+                    font-weight: 800;
+                    letter-spacing: 0.2px;
                 }
-                .dte-num-v3 { font-family: monospace; font-size: 0.65rem; color: #94a3b8; font-weight: 600; margin-top: 4px; display: block; }
+                .dte-num-v3 { font-family: monospace; font-size: 0.6rem; color: #94a3b8; font-weight: 600; margin-top: 2px; display: block; }
 
                 .amount-v3 { font-size: 0.9rem; font-weight: 950; color: #0f172a; }
                 .amount-v3 span { font-size: 0.7rem; color: #94a3b8; font-weight: 800; margin-right: 4px; }
 
-                .doc-actions-v3 { display: flex; gap: 10px; justify-content: flex-end; }
+                .doc-actions-v3 { display: flex; gap: 8px; justify-content: flex-end; }
                 .btn-doc-v3 {
-                    width: 36px; height: 36px;
-                    border-radius: 12px;
+                    width: 32px; height: 32px;
+                    border-radius: 10px;
                     display: flex; align-items: center; justify-content: center;
                     border: 1px solid #e2e8f0;
                     background: white;
                     color: #475569;
-                    font-size: 1.1rem;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    font-size: 0.95rem;
+                    transition: all 0.2s;
                     text-decoration: none;
                 }
                 .btn-doc-v3:hover { transform: scale(1.05); }
@@ -898,49 +915,80 @@ const MundoVerdeInvoices = () => {
                     </div>
                 ) : activeTab === "dashboard" ? (
                     <div className="dashboard-v3">
-                        <div className="filter-bar-v3">
-                            <div className="filter-group-v3">
-                                <label>Emisor</label>
-                                <input name="emisor" value={filters.emisor} onChange={handleFilterChange} placeholder="Buscar por nombre..." />
+                        <div className="dashboard-header-v4">
+                            {/* Fila 1: Filtros Principales (Busqueda) */}
+                            <div className="filter-row-v4">
+                                <div className="filter-group-v3" style={{ flex: 2 }}>
+                                    <label>Emisor / Empresa</label>
+                                    <input name="emisor" value={filters.emisor} onChange={handleFilterChange} placeholder="Buscar por nombre de emisor..." />
+                                </div>
+                                <div className="filter-group-v3" style={{ flex: 1 }}>
+                                    <label>NIT</label>
+                                    <input name="nit" value={filters.nit} onChange={handleFilterChange} placeholder="NIT..." />
+                                </div>
+                                <div className="filter-group-v3" style={{ flex: 1.2 }}>
+                                    <label>Portal User</label>
+                                    <select 
+                                        name="portalUser" 
+                                        value={filters.portalUser} 
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">Todos los usuarios</option>
+                                        {orgUsers.map(u => (
+                                            <option key={u._id} value={`${u.firstName} ${u.lastName}`.trim()}>
+                                                {u.firstName} {u.lastName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                            <div className="filter-group-v3">
-                                <label>NIT</label>
-                                <input name="nit" value={filters.nit} onChange={handleFilterChange} placeholder="NIT..." />
-                            </div>
-                            <div className="filter-group-v3">
-                                <label>Usuario</label>
-                                <select 
-                                    name="portalUser" 
-                                    value={filters.portalUser} 
-                                    onChange={handleFilterChange}
-                                    style={{ height: '34px' }}
-                                >
-                                    <option value="">Todos los usuarios</option>
-                                    {orgUsers.map(u => (
-                                        <option key={u._id} value={`${u.firstName} ${u.lastName}`.trim()}>
-                                            {u.firstName} {u.lastName}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="filter-group-v3">
-                                <label>Desde</label>
-                                <input type="date" name="from" value={filters.from} onChange={handleFilterChange} />
-                            </div>
-                            <div className="filter-group-v3">
-                                <label>Hasta</label>
-                                <input type="date" name="to" value={filters.to} onChange={handleFilterChange} />
-                            </div>
-                        </div>
 
-                        <div className="pagination-bar-v3">
-                            <div className="pagination-compact-v3">
-                                <span className="pagination-info-v3 text-nowrap">Pág {currentPage} de {totalPages}</span>
-                                <div className="pagination-nav-v3">
-                                    <button className="nav-btn-v3" disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(1)}><i className="bi bi-chevron-double-left"></i></button>
-                                    <button className="nav-btn-v3" disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(currentPage - 1)}><i className="bi bi-chevron-left"></i></button>
-                                    <button className="nav-btn-v3" disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(currentPage + 1)}><i className="bi bi-chevron-right"></i></button>
-                                    <button className="nav-btn-v3" disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(totalPages)}><i className="bi bi-chevron-double-right"></i></button>
+                            {/* Fila 2: Filtros Secundarios y Paginación */}
+                            <div className="filter-row-v4 secondary-row">
+                                <div className="d-flex align-items-center gap-2 flex-wrap flex-grow-1">
+                                    <div className="filter-group-v3" style={{ width: '130px' }}>
+                                        <label>Desde</label>
+                                        <input type="date" name="from" value={filters.from} onChange={handleFilterChange} />
+                                    </div>
+                                    <div className="filter-group-v3" style={{ width: '130px' }}>
+                                        <label>Hasta</label>
+                                        <input type="date" name="to" value={filters.to} onChange={handleFilterChange} />
+                                    </div>
+                                    <div className="filter-group-v3" style={{ width: '100px' }}>
+                                        <label>Matched</label>
+                                        <select name="matched" value={filters.matched} onChange={handleFilterChange}>
+                                            <option value="">Status</option>
+                                            <option value="true">SI</option>
+                                            <option value="false">NO</option>
+                                        </select>
+                                    </div>
+                                    <div className="filter-group-v3" style={{ width: '100px' }}>
+                                        <label>Odoo</label>
+                                        <select name="confirmed" value={filters.confirmed} onChange={handleFilterChange}>
+                                            <option value="">Status</option>
+                                            <option value="true">SI</option>
+                                            <option value="false">NO</option>
+                                        </select>
+                                    </div>
+                                    <button 
+                                        className="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
+                                        onClick={resetFilters}
+                                        style={{ fontSize: '10px', fontWeight: '850', color: '#ef4444', height: '30px', alignSelf: 'flex-end', marginLeft: '5px' }}
+                                    >
+                                        <i className="bi bi-x-circle me-1"></i>LIMPIAR
+                                    </button>
+                                </div>
+
+                                <div className="d-flex align-items-center gap-2">
+                                    <span className="pagination-info-v3 text-nowrap" style={{ background: 'transparent', border: 'none', fontSize: '0.65rem' }}>
+                                        Pág {currentPage} / {totalPages}
+                                    </span>
+                                    <div className="pagination-nav-v3" style={{ gap: '2px' }}>
+                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(1)}><i className="bi bi-chevron-double-left"></i></button>
+                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(currentPage - 1)}><i className="bi bi-chevron-left"></i></button>
+                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(currentPage + 1)}><i className="bi bi-chevron-right"></i></button>
+                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(totalPages)}><i className="bi bi-chevron-double-right"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -958,9 +1006,10 @@ const MundoVerdeInvoices = () => {
                                             <th style={{ width: "120px" }}>Fecha</th>
                                             <th>Emisor</th>
                                             <th style={{ width: "160px" }}>Serie / DTE</th>
-                                            <th style={{ width: "150px" }}>Monto</th>
-                                            <th style={{ width: "130px" }}>Odoo</th>
-                                            <th className="text-end">Documentos</th>
+                                            <th style={{ width: "130px" }}>Monto</th>
+                                            <th style={{ width: "100px" }}>Matched</th>
+                                            <th style={{ width: "110px" }}>Odoo</th>
+                                            <th className="text-end">Docs</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -969,18 +1018,18 @@ const MundoVerdeInvoices = () => {
                                                 <tr key={i}>
                                                     <td className="col-date-v3">{formatDate(inv.fecha_emision)}</td>
                                                     <td>
-                                                        <div className="emisor-wrapper-v3">
-                                                            <span className="emisor-name-v3 text-uppercase">{inv.emisor_nombre}</span>
-                                                            <div className="d-flex align-items-center gap-2">
-                                                                <span className="emisor-nit-v3">NIT: {inv.emisor_nit}</span>
-                                                                {inv.portal_user && (
-                                                                    <span className="badge bg-light text-primary border fw-900" style={{ fontSize: '10px', padding: '1px 4px' }}>
-                                                                        <i className="bi bi-person-fill me-1"></i>
-                                                                        {inv.portal_user}
-                                                                    </span>
-                                                                )}
-                                                            </div>
+                                                        <div style={{ fontSize: '10px', fontWeight: '700', lineHeight: '1.2', color: '#1e293b', textTransform: 'uppercase' }}>
+                                                            {inv.emisor_nombre}
                                                         </div>
+                                                        <div style={{ fontSize: '8.5px', color: '#94a3b8', marginTop: '1px', fontWeight: '600' }}>
+                                                            NIT: {inv.emisor_nit}
+                                                        </div>
+                                                        {inv.portal_user && (
+                                                            <span className="badge bg-light text-primary border fw-900 mt-1" style={{ fontSize: '8.5px', padding: '1px 4px', display: 'inline-block' }}>
+                                                                <i className="bi bi-person-fill me-1"></i>
+                                                                {inv.portal_user}
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td>
                                                         <div className="d-flex flex-column align-items-start">
@@ -989,19 +1038,32 @@ const MundoVerdeInvoices = () => {
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div className="amount-v3">
-                                                            <span>{inv.moneda}</span>
-                                                            {new Intl.NumberFormat("es-GT", { minimumFractionDigits: 2 }).format(inv.monto_total)}
+                                                        <div className="d-flex align-items-baseline gap-1">
+                                                            <span style={{ fontSize: '8.5px', fontWeight: '600', color: '#94a3b8' }}>{inv.moneda || 'GTQ'}</span>
+                                                            <span style={{ fontSize: '11px', fontWeight: '700', color: '#0f172a' }}>
+                                                                {inv.monto_total?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                                            </span>
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        {inv.confirmed ? (
-                                                            <span className="badge bg-success bg-opacity-10 text-success border border-success fw-900" style={{ fontSize: '10px', padding: '4px 8px' }}>
-                                                                <i className="bi bi-check-circle-fill me-1"></i> Vinculada
+                                                        {inv.matched ? (
+                                                            <span className="badge bg-success bg-opacity-10 text-success border border-success fw-900" style={{ fontSize: '10px', padding: '4px 12px' }}>
+                                                                SI
                                                             </span>
                                                         ) : (
-                                                            <span className="badge bg-warning bg-opacity-10 text-warning border border-warning fw-900" style={{ fontSize: '10px', padding: '4px 8px' }}>
-                                                                <i className="bi bi-hourglass-split me-1"></i> Pendiente
+                                                            <span className="badge bg-warning bg-opacity-10 text-warning border border-warning fw-900" style={{ fontSize: '10px', padding: '4px 12px' }}>
+                                                                NO
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        {inv.confirmed ? (
+                                                            <span className="badge bg-success bg-opacity-10 text-success border border-success fw-900" style={{ fontSize: '10px', padding: '4px 12px' }}>
+                                                                SI
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge bg-warning bg-opacity-10 text-warning border border-warning fw-900" style={{ fontSize: '10px', padding: '4px 12px' }}>
+                                                                NO
                                                             </span>
                                                         )}
                                                     </td>
@@ -1018,7 +1080,7 @@ const MundoVerdeInvoices = () => {
                                                 </tr>
                                             ))
                                         ) : (
-                                            <tr><td colSpan="5" className="text-center py-5 opacity-40 fw-950 fs-7">NO HAY FACTURAS DISPONIBLES</td></tr>
+                                            <tr><td colSpan="7" className="text-center py-5 opacity-40 fw-950 fs-7">NO HAY FACTURAS DISPONIBLES</td></tr>
                                         )}
                                     </tbody>
                                 </table>
