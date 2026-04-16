@@ -2,10 +2,14 @@ import { useForm } from "react-hook-form";
 import RB_Toast from "../../../components/RB_Toast";
 import { useState, useEffect } from "react";
 import { garooInstance } from "../../../api/axios";
+import { useAuth } from "../../../context/AuthContext";
 import { Spinner } from "react-bootstrap";
 import RegistroProveedor from "../RegistroProveedor/RegistroProveedorPage";
 
 const MundoVerdeInvoices = () => {
+    const { user } = useAuth();
+    const isAdmin = (user?.role || '').toLowerCase() === 'admin';
+
     const { register, handleSubmit, reset } = useForm({
         mode: "onChange",
         defaultValues: { nit: "", serie: "" },
@@ -745,6 +749,7 @@ const MundoVerdeInvoices = () => {
                         <button
                             className={activeTab === "portal_history" ? "active-tab px-3" : "px-3"}
                             onClick={() => setActiveTab("portal_history")}
+                            style={{ display: isAdmin ? 'none' : undefined }}
                         >
                             <i className="bi bi-person-badge"></i> Mis Envíos
                         </button>
