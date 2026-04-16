@@ -56,7 +56,8 @@ const MundoVerdeInvoices = () => {
                     emisor,
                     nit,
                     from,
-                    to
+                    to,
+                    orgSlug: 'mundo-verde'  // Le dice al backend qué org consultar (necesario para Admin)
                 }
             });
             
@@ -66,14 +67,39 @@ const MundoVerdeInvoices = () => {
             }
         } catch (error) {
             console.error("Error fetching invoices:", error);
-            setToastTitle("Error Dashboard");
-            setToastMessage("No se pudo conectar con el SAT o la base de datos.");
+
+            // Mensajes específicos según el código de error del backend
+            const errCode = error.response?.data?.error;
+            const errStatus = error.response?.status;
+
+            let title = "Error Dashboard";
+            let msg = "No se pudo conectar con la base de datos.";
+            let persistent = false;
+
+            if (errCode === "db_not_configured") {
+                title = "Base de Datos No Configurada";
+                msg = error.response.data.message || "Esta organización no tiene una base de datos configurada. Contacta al administrador.";
+                persistent = true;
+            } else if (errCode === "db_connection_failed" || errStatus === 503) {
+                title = "Error de Conexión";
+                msg = error.response?.data?.message || "No se pudo conectar a la base de datos de la organización. Verifica la cadena de conexión.";
+                persistent = true;
+            } else if (errStatus === 401 || errStatus === 403) {
+                title = "Sin Autorización";
+                msg = "No tienes permiso para acceder a este recurso.";
+            } else if (!error.response) {
+                title = "Sin Conexión al Servidor";
+                msg = "No se pudo alcanzar el servidor. Verifica tu conexión a internet.";
+            }
+
+            setIsPersistentToast(persistent);
+            setToastTitle(title);
+            setToastMessage(msg);
             setToastVariant("danger");
             setShowToast(true);
         } finally {
             setIsFetchingInvoices(false);
         }
-    };
 
     const fetchPortalHistory = async () => {
         setIsFetchingPortalHistory(true);
