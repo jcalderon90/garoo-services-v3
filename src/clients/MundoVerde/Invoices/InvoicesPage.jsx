@@ -896,7 +896,6 @@ const MundoVerdeInvoices = () => {
                                     style={{ height: '34.4px', minWidth: '160px' }}
                                 >
                                     <option value="">Todos los usuarios</option>
-                                    <option value="Mundo Verde (Migrado)">Mundo Verde (Migrado)</option>
                                     {orgUsers.map(u => (
                                         <option key={u._id} value={`${u.firstName} ${u.lastName}`.trim()}>
                                             {u.firstName} {u.lastName}
