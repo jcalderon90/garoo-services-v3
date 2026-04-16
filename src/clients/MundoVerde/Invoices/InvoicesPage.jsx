@@ -959,6 +959,7 @@ const MundoVerdeInvoices = () => {
                                             <th>Emisor</th>
                                             <th style={{ width: "160px" }}>Serie / DTE</th>
                                             <th style={{ width: "150px" }}>Monto</th>
+                                            <th style={{ width: "130px" }}>Odoo</th>
                                             <th className="text-end">Documentos</th>
                                         </tr>
                                     </thead>
@@ -992,6 +993,17 @@ const MundoVerdeInvoices = () => {
                                                             <span>{inv.moneda}</span>
                                                             {new Intl.NumberFormat("es-GT", { minimumFractionDigits: 2 }).format(inv.monto_total)}
                                                         </div>
+                                                    </td>
+                                                    <td>
+                                                        {inv.confirmed ? (
+                                                            <span className="badge bg-success bg-opacity-10 text-success border border-success fw-900" style={{ fontSize: '10px', padding: '4px 8px' }}>
+                                                                <i className="bi bi-check-circle-fill me-1"></i> Vinculada
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge bg-warning bg-opacity-10 text-warning border border-warning fw-900" style={{ fontSize: '10px', padding: '4px 8px' }}>
+                                                                <i className="bi bi-hourglass-split me-1"></i> Pendiente
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td>
                                                         <div className="doc-actions-v3">
