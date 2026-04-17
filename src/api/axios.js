@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // URL Base de tu backend local
-const GAROO_API_BASE = import.meta.env.VITE_GAROO_API_URL || "http://localhost:5000/api";
+const GAROO_API_BASE = import.meta.env.VITE_GAROO_API_URL || "https://rockanrolla-garoo.koyeb.app/api";
 
 // Configuración común para todas las instancias
 const commonConfig = {
@@ -13,7 +13,10 @@ const commonConfig = {
 const authInstance = axios.create({ ...commonConfig });
 
 // Instancia principal de la plataforma (usada para todo el backend local)
-const garooInstance = axios.create({ ...commonConfig });
+const garooInstance = axios.create({
+    baseURL: GAROO_API_BASE,
+    withCredentials: true,
+});
 
 // Instancia específica para RocknRolla (servicio externo)
 const applicationsInstance = axios.create({

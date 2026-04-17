@@ -25,6 +25,7 @@ const MundoVerdeInvoices = () => {
     const [activeTab, setActiveTab] = useState("form");
     const [invoices, setInvoices] = useState([]);
     const [isFetchingInvoices, setIsFetchingInvoices] = useState(false);
+    const [totalInvoices, setTotalInvoices] = useState(0);
     const initialFilters = {
         emisor: "",
         nit: "",
@@ -81,6 +82,7 @@ const MundoVerdeInvoices = () => {
             if (response.data) {
                 setInvoices(response.data.data || []);
                 setTotalPages(response.data.meta?.totalPages || 1);
+                setTotalInvoices(response.data.meta?.total || 0);
             }
         } catch (error) {
             console.error("Error fetching invoices:", error);
@@ -973,21 +975,26 @@ const MundoVerdeInvoices = () => {
                                     <button 
                                         className="btn btn-link p-0 text-decoration-none d-flex align-items-center" 
                                         onClick={resetFilters}
-                                        style={{ fontSize: '10px', fontWeight: '850', color: '#ef4444', height: '30px', alignSelf: 'flex-end', marginLeft: '5px' }}
+                                        style={{ fontSize: '10px', fontWeight: '950', color: '#ef4444', height: '32px', marginLeft: '10px' }}
                                     >
-                                        <i className="bi bi-x-circle me-1"></i>LIMPIAR
+                                        <i className="bi bi-x-circle me-1" style={{ fontSize: '11px' }}></i>LIMPIAR
                                     </button>
                                 </div>
 
-                                <div className="d-flex align-items-center gap-2">
-                                    <span className="pagination-info-v3 text-nowrap" style={{ background: 'transparent', border: 'none', fontSize: '0.65rem' }}>
-                                        Pág {currentPage} / {totalPages}
-                                    </span>
-                                    <div className="pagination-nav-v3" style={{ gap: '2px' }}>
-                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(1)}><i className="bi bi-chevron-double-left"></i></button>
-                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(currentPage - 1)}><i className="bi bi-chevron-left"></i></button>
-                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(currentPage + 1)}><i className="bi bi-chevron-right"></i></button>
-                                        <button className="nav-btn-v3" style={{ width: '24px', height: '24px', fontSize: '0.65rem' }} disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(totalPages)}><i className="bi bi-chevron-double-right"></i></button>
+                                <div className="ms-auto d-flex align-items-center gap-4" style={{ height: '32px' }}>
+                                    <div className="d-flex align-items-center" style={{ fontSize: '10px', fontWeight: '950', letterSpacing: '0.4px', color: '#64748b' }}>
+                                        TOTAL: <span className="text-dark ms-1">{totalInvoices.toLocaleString()}</span>
+                                    </div>
+                                    <div className="d-flex align-items-center gap-3">
+                                        <span className="text-nowrap" style={{ fontSize: '10px', fontWeight: '950', letterSpacing: '0.4px', color: '#64748b' }}>
+                                            PÁG {currentPage} / {totalPages}
+                                        </span>
+                                        <div className="pagination-nav-v3 d-flex align-items-center" style={{ gap: '3px' }}>
+                                            <button className="nav-btn-v3" style={{ width: '26px', height: '26px', borderRadius: '6px', fontSize: '10px' }} disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(1)}><i className="bi bi-chevron-double-left"></i></button>
+                                            <button className="nav-btn-v3" style={{ width: '26px', height: '26px', borderRadius: '6px', fontSize: '10px' }} disabled={currentPage === 1 || isFetchingInvoices} onClick={() => fetchInvoices(currentPage - 1)}><i className="bi bi-chevron-left"></i></button>
+                                            <button className="nav-btn-v3" style={{ width: '26px', height: '26px', borderRadius: '6px', fontSize: '10px' }} disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(currentPage + 1)}><i className="bi bi-chevron-right"></i></button>
+                                            <button className="nav-btn-v3" style={{ width: '26px', height: '26px', borderRadius: '6px', fontSize: '10px' }} disabled={currentPage === totalPages || isFetchingInvoices} onClick={() => fetchInvoices(totalPages)}><i className="bi bi-chevron-double-right"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
