@@ -225,9 +225,7 @@ const MundoVerdeInvoices = () => {
             }
 
             const queryStr = `?nit=${encodeURIComponent(data.nit.trim())}&serie=${encodeURIComponent(data.serie.trim())}`;
-            const response = await garooInstance.post(`/services/execute/facturas${queryStr}`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const response = await garooInstance.post(`/services/execute/facturas${queryStr}`, formData);
 
             console.log("Respuesta del servidor:", response.data);
 
