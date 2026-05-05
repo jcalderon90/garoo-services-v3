@@ -36,7 +36,7 @@ export const ServicesProvider = ({ children }) => {
                 ...s,
                 id: s.slug, // Compatibility
                 label: s.name,      // For UI
-                sublabel: s.client_name || "Garoo Service" // For UI
+                sublabel: s.client_name || "Redtec Service" // For UI
             }));
 
             setUserServices(enrichedServices);

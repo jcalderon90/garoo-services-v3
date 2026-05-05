@@ -10,7 +10,7 @@ export default function SubmittedScreen() {
                 recibirás acceso a tu agente configurado y listo para usar.
             </p>
             <div className={styles.footer}>
-                Revisa tu correo para los próximos pasos · Soporte: hola@garoo.ai
+                Revisa tu correo para los próximos pasos · Soporte: hola@redtec.ai
             </div>
         </div>
     );

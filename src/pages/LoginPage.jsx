@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import garooLogo from "../assets/img/garoo-logo.png";
+import logo from "../assets/img/redtec-logo.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,7 +25,7 @@ const LoginPage = () => {
     } = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: "user@garoo.ai",
+            email: "user@redtec.ai",
             password: "",
         },
     });
@@ -87,7 +87,7 @@ const LoginPage = () => {
                 .logo-ring {
                     width: 72px;
                     height: 72px;
-                    background: white;
+                    background: transparent;
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
@@ -106,8 +106,7 @@ const LoginPage = () => {
                 .logo-image {
                     width: 100%;
                     height: 100%;
-                    object-fit: cover;
-                    border-radius: 50%;
+                    object-fit: contain;
                 }
 
                 .header-section {
@@ -226,7 +225,7 @@ const LoginPage = () => {
             <div className="login-card-v3">
                 <div className="logo-container">
                     <div className="logo-ring">
-                        <img src={garooLogo} alt="Garoo" className="logo-image" />
+                        <img src={logo} alt="Redtec" className="logo-image" />
                     </div>
                 </div>
 
@@ -248,7 +247,7 @@ const LoginPage = () => {
                         <input 
                             type="email" 
                             className={`input-v3 ${errors.email ? 'border-danger' : ''}`}
-                            placeholder="user@garoo.ai"
+                            placeholder="user@redtec.ai"
                             {...register("email")}
                         />
                         {errors.email && <span className="text-danger" style={{fontSize: "0.75rem", marginTop: "4px", display: "inline-block"}}>{errors.email.message}</span>}
@@ -284,7 +283,7 @@ const LoginPage = () => {
                     </button>
 
                     <div className="footer-v3">
-                        <p>© 2026 Ecosistema de Inteligencia Garoo</p>
+                        <p>© 2026 Ecosistema de Inteligencia Redtec</p>
                     </div>
                 </form>
             </div>

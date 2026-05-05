@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Nav, Navbar, Container, NavDropdown } from "react-bootstrap";
 import { useAuth } from "../../context/AuthContext";
-import garooLogo from "../../assets/img/garoo-logo.png";
+import logo from "../../assets/img/redtec-logo.png";
 
 const Header = () => {
     const location = useLocation();
@@ -14,10 +14,10 @@ const Header = () => {
                 <Container fluid className="px-4 h-100">
                     <Navbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
                         <div className="brand-circle">
-                            <img src={garooLogo} alt="Garoo" />
+                            <img src={logo} alt="Redtec Logo" />
                         </div>
                         <div className="brand-text-wrapper">
-                            <span className="brand-name">Garoo</span>
+                            <span className="brand-name">Redtec</span>
                             <span className="brand-subtitle">PORTAL</span>
                         </div>
                     </Navbar.Brand>
@@ -113,7 +113,7 @@ const Header = () => {
                 .brand-circle {
                     width: 44px;
                     height: 44px;
-                    background: white;
+                    background: transparent;
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
@@ -136,8 +136,7 @@ const Header = () => {
                 .brand-circle img { 
                     width: 100%; 
                     height: 100%; 
-                    object-fit: cover;
-                    border-radius: 50%;
+                    object-fit: contain;
                 }
                 .brand-text-wrapper {
                     display: flex;

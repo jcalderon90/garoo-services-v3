@@ -13,7 +13,7 @@ export default function PhaseNavSidebar({ clientId, currentPhase, completedPhase
                         <div className={styles.brandLogoInner} />
                     </div>
                     <div>
-                        <div className={styles.brandName}>Garoo</div>
+                        <div className={styles.brandName}>Redtec</div>
                         <div className={styles.brandSub}>Agent Onboarding</div>
                     </div>
                 </div>

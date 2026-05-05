@@ -37,7 +37,7 @@ const Home = () => {
 
                 <div className="mt-5 pt-4 opacity-40">
                     <p className="small fw-bold text-uppercase tracking-wider text-muted mb-0" style={{ fontSize: '0.6rem' }}>
-                        Garoo © 2026 • Inteligencia operativa
+                        Redtec © 2026 • Inteligencia operativa
                     </p>
                 </div>
             </div>

@@ -35,7 +35,7 @@ const Services = () => {
                             <div className={styles.iconWrapper}>
                                 <i className={service.icon}></i>
                             </div>
-                            <span className={styles.badge}>{service.sublabel || 'Garoo Service'}</span>
+                            <span className={styles.badge}>{service.sublabel || 'Redtec Service'}</span>
                             <h3 className={styles.cardTitle}>{service.label}</h3>
                             <p className={styles.cardDesc}>
                                 {service.description}

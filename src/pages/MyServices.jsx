@@ -121,7 +121,7 @@ const MyServices = () => {
                     </div>
                     <h5 className="fw-900 mb-2">No se encontraron servicios</h5>
                     <p className="text-muted px-md-5">
-                        Si crees que esto es un error, por favor contacta con soporte o verifica tu suscripción a herramientas de Garoo.
+                        Si crees que esto es un error, por favor contacta con soporte o verifica tu suscripción a herramientas de Redtec.
                     </p>
                 </div>
             )}
