@@ -11,6 +11,8 @@ const ApplicationsFilters = ({
     setPositionFilter,
     salaryFilter,
     setSalaryFilter,
+    dateFilter,
+    setDateFilter,
     nationalities,
     positions,
     handleResetFilters,
@@ -149,6 +151,19 @@ const ApplicationsFilters = ({
                         <option value="">A → Z (Nombre)</option>
                         <option value="1">A → Z</option>
                         <option value="1-desc">Z → A</option>
+                    </select>
+                </div>
+                
+                <div className="filter-item">
+                    <select
+                        className="form-select filter-select"
+                        value={dateFilter}
+                        onChange={(e) => setDateFilter(e.target.value)}
+                        title="Fecha"
+                    >
+                        <option value="">Cualquier Fecha</option>
+                        <option value="desc">Más Recientes</option>
+                        <option value="asc">Más Antiguos</option>
                     </select>
                 </div>
 
